@@ -18,6 +18,7 @@ public class FollowingCamera : MonoBehaviour {
     private Vector3 unlimitedRotation;
     public float horizontalRotation; // Public for the only reason that the player rotation will need it
     private float horizontalRotationObjective; // The camera will will be lerped to this angle
+    private GameController gameController;
 
     // Use this for initialization
     void Start(){
@@ -27,27 +28,27 @@ public class FollowingCamera : MonoBehaviour {
         transform.position = POI.position;
         horizontalRotation = startingRotation;
         horizontalRotationObjective = horizontalRotation;
+        gameController = GetComponent<GameController>();
     }
 
 
     // Update is called once per frame
     void Update () {
-
     }
 
     void LateUpdate(){
-        horizontalRotationObjective += Input.GetAxis("Mouse X") * mouseSensivity * Time.deltaTime;
+        if (!gameController.paralyzed) horizontalRotationObjective += Input.GetAxis("Mouse X") * mouseSensivity * Time.deltaTime;
 
         if (horizontalRotation != horizontalRotationObjective) {
-            horizontalRotation = Mathf.Lerp(horizontalRotation, horizontalRotationObjective, objectiveCatchUpSpeed*Time.deltaTime);
+            horizontalRotation = Mathf.Lerp(horizontalRotation, horizontalRotationObjective, objectiveCatchUpSpeed * Time.deltaTime);
         }
         if (offset != offsetObjective) {
             offset = Mathf.Lerp(offset, offsetObjective, objectiveCatchUpSpeed * Time.deltaTime);
         }
 
-        transform.position = POI.position 
-                                + Quaternion.Euler(0f, horizontalRotation, 0f) * (offset * -Vector3.back) 
-                                + new Vector3(0, cameraAdditionalHeight + (offset-optimalOffset)* cameraPitchMultiplier);
+        transform.position = POI.position
+                                + Quaternion.Euler(0f, horizontalRotation, 0f) * (offset * -Vector3.back)
+                                + new Vector3(0, cameraAdditionalHeight + (offset - optimalOffset) * cameraPitchMultiplier);
         transform.LookAt(POI.position);
     }
 

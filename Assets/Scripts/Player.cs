@@ -7,11 +7,17 @@ public class Player : MonoBehaviour {
 	public float walkMaximumSpeed = 10f;
     public float lerpAcceleration = 2f;
     public float turnSpeed = 50f;
-    public FollowingCamera cameraScript;
     public float catchUpSpeed;
     public float cameraMovementMultiplier = 10f;
 
     private Vector2 currentSpeed = new Vector2();
+    private FollowingCamera cameraScript;
+    private GameController gameController;
+
+    private void Start() {
+        cameraScript = Camera.main.GetComponent<FollowingCamera>();
+        gameController = Camera.main.GetComponent<GameController>();
+    }
 
     void Update() {
 
@@ -23,8 +29,16 @@ public class Player : MonoBehaviour {
         }
         */
 
+        transform.Translate(currentSpeed.x, 0, currentSpeed.y);
+
+        Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
+        if (gameController.paralyzed) {
+            input = new Vector2();
+        }
+
         // Looking in the right direction
-        if (Input.GetAxis("Horizontal") != 0f || Input.GetAxis("Vertical") != 0f) {
+        if (input.x != 0f || input.y != 0f) {
             transform.rotation = Quaternion.Lerp(
                 transform.rotation,
                 Quaternion.Euler(0f, cameraAngle - 180, 0f),
@@ -36,18 +50,17 @@ public class Player : MonoBehaviour {
         if (currentSpeed.x < maxSpeed && currentSpeed.x > -maxSpeed) {
             currentSpeed.x = Mathf.Lerp(
                 currentSpeed.x,
-                Input.GetAxis("Horizontal") * maxSpeed * Time.deltaTime,
+                input.x * maxSpeed * Time.deltaTime,
                 lerpAcceleration * Time.deltaTime
             );
         }
         if (currentSpeed.y < maxSpeed && currentSpeed.y > -maxSpeed) {
             currentSpeed.y = Mathf.Lerp(
                 currentSpeed.y,
-                Input.GetAxis("Vertical") * maxSpeed * Time.deltaTime,
+                input.y * maxSpeed * Time.deltaTime,
                 lerpAcceleration * Time.deltaTime
             );
         }
-        transform.Translate(currentSpeed.x, 0, currentSpeed.y);
 
         // Camera effect
         float cameraDistance = Mathf.Clamp(Mathf.Abs(currentSpeed.x) + Mathf.Abs(currentSpeed.y), -maxSpeed*Time.deltaTime, maxSpeed*Time.deltaTime);
