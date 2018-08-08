@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 136184108873234930}
   - component: {fileID: 54131756921206820}
   - component: {fileID: 114262979599536708}
+  - component: {fileID: 114616238871784204}
   m_Layer: 0
   m_Name: Body
   m_TagString: Player
@@ -301,11 +302,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c847094145bf8024cb6f7b3f8690290f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkMaximumSpeed: 10
+  walkMaximumSpeed: 7
   lerpAcceleration: 5
   turnSpeed: 50
   catchUpSpeed: 8
   cameraMovementMultiplier: 20
+--- !u!114 &114616238871784204
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1568617870632238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72a9793592a924640bb09726f1fabc51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldown: 1
+  shockwavePrefab: {fileID: 1835144876913268, guid: b99327bd369fbf04982eac2e989b78cd,
+    type: 2}
+  maxRange: 7
+  speed: 1
+  showTagsFor: 2
 --- !u!135 &135909845572101460
 SphereCollider:
   m_ObjectHideFlags: 1

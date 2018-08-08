@@ -13,7 +13,6 @@ public class BystanderBehavior : MonoBehaviour {
     public List<bool> mindSequenceMask; // How many are known by the player
 
     public Bystander personality;
-    public bool target = false;
     public modes mode = modes.DummyPFT;
     private int mindLength = 5;
 
@@ -27,11 +26,14 @@ public class BystanderBehavior : MonoBehaviour {
 
         // Use this for initialization
     void Start () {
+
         gameController = Camera.main.GetComponent<GameController>();
         agent = gameObject.GetComponent<NavMeshAgent>();
 
         // Applying personality parameters
+        Debug.Log(personality);
         agent.speed = Random.Range(personality.minSpeed, personality.maxSpeed);
+        Debug.Log("AFTER");
 
         // Generate mind sequence
         mindLength = (int) Mathf.Min(gameController.maxMindLength, mindLength);
@@ -55,6 +57,15 @@ public class BystanderBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (gameController.timeStopped) {
+            agent.isStopped = true;
+            return;
+        }
+        else {
+            agent.isStopped = false;
+        }
+
         switch (mode){
             case modes.DummyPFT:
                 agent.SetDestination(GameObject.FindGameObjectWithTag("DummyPFT").transform.position);
@@ -89,4 +100,11 @@ public class BystanderBehavior : MonoBehaviour {
 
 
     }
+
+    public void Unmask(int amount) {
+        for (int i = 0; i < (int)Mathf.Min(amount, mindSequence.Length); i++) {
+            mindSequenceMask[i] = true;
+        }
+    }
+
 }

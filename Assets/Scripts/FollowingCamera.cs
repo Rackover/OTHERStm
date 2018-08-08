@@ -37,7 +37,7 @@ public class FollowingCamera : MonoBehaviour {
     }
 
     void LateUpdate(){
-        if (!gameController.paralyzed) horizontalRotationObjective += Input.GetAxis("Mouse X") * mouseSensivity * Time.deltaTime;
+        if (!gameController.paralyzed) horizontalRotationObjective += Input.GetAxis("HorizontalView") * mouseSensivity * Time.deltaTime;
 
         if (horizontalRotation != horizontalRotationObjective) {
             horizontalRotation = Mathf.Lerp(horizontalRotation, horizontalRotationObjective, objectiveCatchUpSpeed * Time.deltaTime);

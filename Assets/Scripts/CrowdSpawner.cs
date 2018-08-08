@@ -20,7 +20,11 @@ public class CrowdSpawner : MonoBehaviour {
             position.y = Mathf.Sin(angle) * bypasserRange*Random.value + transform.position.z;
             GameObject bystander = GameObject.Instantiate(bystanderPrefab);
             bystander.GetComponent<Transform>().position = new Vector3(position.x, transform.position.y, position.y);   // random position within circle
-            bystander.GetComponent<BystanderBehavior>().personality = personalities[(int)Mathf.Floor(Random.value * personalities.Length)]; // Random personality
+            Debug.Log("Giving personality out of "+personalities.Length.ToString()+" available personalities");
+            Bystander choice = personalities[(int)Mathf.Floor(Random.value * personalities.Length)];
+            Debug.Log("Giving out " + choice.ToString());
+            bystander.GetComponent<BystanderBehavior>().personality = choice; // Random personality
+            Debug.Log(bystander.GetComponent<BystanderBehavior>().personality);
             bystander.GetComponent<BystanderBehavior>().mode = modes[(int)Mathf.Floor(Random.value * modes.Length)]; // Random mode
         }
 

@@ -55,5 +55,6 @@ MonoBehaviour:
   bypasserRange: 4
   personalities:
   - {fileID: 11400000, guid: 4d114ace344075041943b353184a0acf, type: 2}
+  modes: 
   bystanderPrefab: {fileID: 1420296466847476, guid: 34efcfbd6e7dce045b822bf7da4b139c,
     type: 2}

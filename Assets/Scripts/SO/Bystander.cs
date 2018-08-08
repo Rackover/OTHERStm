@@ -6,5 +6,4 @@ public class Bystander : ScriptableObject {
     public string model = "BystanderModel";
     public float minSpeed = 1f;
     public float maxSpeed = 2f;
-    private Color color = new Color();
 }

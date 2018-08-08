@@ -225,7 +225,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10100, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: 2100000, guid: fac406b154f864a4696a93c3e831f86c, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -341,7 +341,7 @@ TextMesh:
   m_FontSize: 72
   m_FontStyle: 1
   m_RichText: 1
-  m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Font: {fileID: 12800000, guid: fac406b154f864a4696a93c3e831f86c, type: 3}
   m_Color:
     serializedVersion: 2
     rgba: 4294967295
@@ -358,8 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mindSequence: 
   mindSequenceMask: 
-  personality: {fileID: 11400000, guid: 4d114ace344075041943b353184a0acf, type: 2}
-  target: 0
+  personality: {fileID: 0}
   mode: 0
 --- !u!114 &114637176760003840
 MonoBehaviour:
@@ -372,8 +371,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 611ef44932e7ec24cb41a28be6cbab81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textComponent: {fileID: 102719418436306670}
-  maxDrawDistance: 3
+  displayer: {fileID: 1507518190047244}
+  maxDrawDistance: 8
   minDrawDistance: 1
 --- !u!135 &135841549272389960
 SphereCollider:

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour {
+public class PlayerMovement : MonoBehaviour {
 	
 	public float walkMaximumSpeed = 10f;
     public float lerpAcceleration = 2f;
@@ -19,7 +19,7 @@ public class Player : MonoBehaviour {
         gameController = Camera.main.GetComponent<GameController>();
     }
 
-    void Update() {
+    private void Update() {
 
         float cameraAngle = cameraScript.horizontalRotation;
         float maxSpeed = walkMaximumSpeed;
@@ -33,7 +33,7 @@ public class Player : MonoBehaviour {
 
         Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
-        if (gameController.paralyzed) {
+        if (gameController.paralyzed || gameController.timeStopped) {
             input = new Vector2();
         }
 

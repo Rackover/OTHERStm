@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
 
-    [Header("Codes")]
+    [Header("Game")]
+    public bool timeStopped = false;
+
+    [Header("Sequences")]
     public List<string> sequenceElements;
     public int maxMindLength = 5;
 
@@ -13,10 +16,13 @@ public class GameController : MonoBehaviour {
 
     [Header("Bystanders")]
     public int maxBystanders = 200;
-    private List<string> availableSequences = new List<string>();
+    private List<string> availableSequences;
+    public GameObject target;
     
     private void Awake() {
+
         // Generate all the keys that will ever be used
+        availableSequences = new List<string>();
         Debug.Log(Mathf.Pow(sequenceElements.Count, maxMindLength).ToString() + " possibilities of sequences");
         int toGenerate = (int)Mathf.Min(maxBystanders,  Mathf.Pow(sequenceElements.Count, maxMindLength));
         Debug.Log("Will generate "+toGenerate.ToString());
@@ -32,17 +38,16 @@ public class GameController : MonoBehaviour {
     }
 
     void Update () {
-        // Debug
-        if (Input.GetKey(KeyCode.O)) {
-            Cursor.visible = true;
-            paralyzed = true;
-        }
-        if (Input.GetKey(KeyCode.P)) {
-            Cursor.visible = false;
-            paralyzed = false;
-        }
-        if (Input.GetKey(KeyCode.I)) {
-            Debug.Log(availableSequences.ToString());
+        // Picking a target
+        if (target == null) {
+            List<GameObject> bystanders = new List<GameObject>();
+            GameObject[] objects = GameObject.FindObjectsOfType<GameObject>();
+            foreach (GameObject obj in objects){
+                if (obj.GetComponents<BystanderBehavior>().Length > 0) {
+                    bystanders.Add(obj);
+                }
+            }
+            target = bystanders[(int)Mathf.Floor(Random.value * bystanders.Count)];
         }
     }
 
@@ -50,7 +55,6 @@ public class GameController : MonoBehaviour {
         if (availableSequences.Count > 0) {
             string seq = availableSequences[0];
             availableSequences.RemoveAt(0);
-            Debug.Log("Handed over a sequence");
             return seq;
         }
         else {
