@@ -7,9 +7,10 @@ public class GameController : MonoBehaviour {
     [Header("Game")]
     public bool timeStopped = false;
 
-    [Header("Sequences")]
+    [Header("Investigation")]
     public List<string> sequenceElements;
     public int maxMindLength = 5;
+    public List<char> discoveredSequence;
 
     [Header("Player")]
     public bool paralyzed = false; // Freezes the player and takes away the camera control
@@ -21,6 +22,11 @@ public class GameController : MonoBehaviour {
     
     private void Awake() {
 
+        discoveredSequence = new List<char>(maxMindLength);
+        for (int i = 0; i < maxMindLength; i++) {
+            discoveredSequence.Add('?');
+        }
+        
         // Generate all the keys that will ever be used
         availableSequences = new List<string>();
         Debug.Log(Mathf.Pow(sequenceElements.Count, maxMindLength).ToString() + " possibilities of sequences");

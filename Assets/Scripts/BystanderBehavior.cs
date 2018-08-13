@@ -11,10 +11,11 @@ public class BystanderBehavior : MonoBehaviour {
 
     public string mindSequence;
     public List<bool> mindSequenceMask; // How many are known by the player
-
     public Bystander personality;
     public modes mode = modes.DummyPFT;
+    public bool targeted = false;
     private int mindLength = 5;
+    public float deathForce = 1000;
 
     private NavMeshAgent agent;
     private GameController gameController;
@@ -31,9 +32,7 @@ public class BystanderBehavior : MonoBehaviour {
         agent = gameObject.GetComponent<NavMeshAgent>();
 
         // Applying personality parameters
-        Debug.Log(personality);
         agent.speed = Random.Range(personality.minSpeed, personality.maxSpeed);
-        Debug.Log("AFTER");
 
         // Generate mind sequence
         mindLength = (int) Mathf.Min(gameController.maxMindLength, mindLength);
@@ -57,6 +56,16 @@ public class BystanderBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        // Debug
+        Component halo = GetComponent("Halo");
+        halo.GetType().GetProperty("enabled").SetValue(halo, targeted, null);
+        // End of
+
+        // When looking at someone, character can see the mind sequence
+        if (targeted) {
+            GetComponent<SequenceDisplay>().drawClock = 1f;
+        }
 
         if (gameController.timeStopped) {
             agent.isStopped = true;
@@ -106,5 +115,35 @@ public class BystanderBehavior : MonoBehaviour {
             mindSequenceMask[i] = true;
         }
     }
+    
+    public void Die() {
+        Component halo = GetComponent("Halo");
+        halo.GetType().GetProperty("enabled").SetValue(halo, targeted, null);
+        Rigidbody body = GetComponent<Rigidbody>();
+        body.constraints = RigidbodyConstraints.None;
+        body.AddForce(new Vector3(
+            Random.value * deathForce - deathForce/2,
+            Random.value * deathForce - deathForce / 2,
+            Random.value * deathForce - deathForce / 2
+        ));
+        body.AddTorque(new Vector3(
+            (Random.value * deathForce - deathForce / 2)/100,
+            (Random.value * deathForce - deathForce / 2)/100,
+            (Random.value * deathForce - deathForce / 2)/100
+        ));
 
+        Destroy(GetComponent<NavMeshAgent>());
+        Destroy(GetComponent<BystanderBehavior>());
+    }
+
+    public void UpdateKnowledge(List<char> knowledge) {
+        string targetSequence = Camera.main.GetComponent<GameController>().target.GetComponent<BystanderBehavior>().mindSequence;
+        for (int i = 0; i < mindSequence.Length; i++) {
+            char element = mindSequence[i];
+            char targetElement = targetSequence[i];
+            if (element.Equals(targetElement)) {
+                knowledge[i] = element;
+            }
+        }
+    }
 }

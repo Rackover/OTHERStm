@@ -21,7 +21,8 @@ public class FollowingCamera : MonoBehaviour {
     private GameController gameController;
 
     // Use this for initialization
-    void Start(){
+    void Start() {
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         offset = optimalOffset;
         offsetObjective = offset;
@@ -33,10 +34,10 @@ public class FollowingCamera : MonoBehaviour {
 
 
     // Update is called once per frame
-    void Update () {
+    void Update() {
     }
 
-    void LateUpdate(){
+    void LateUpdate() {
         if (!gameController.paralyzed) horizontalRotationObjective += Input.GetAxis("HorizontalView") * mouseSensivity * Time.deltaTime;
 
         if (horizontalRotation != horizontalRotationObjective) {
@@ -49,7 +50,11 @@ public class FollowingCamera : MonoBehaviour {
         transform.position = POI.position
                                 + Quaternion.Euler(0f, horizontalRotation, 0f) * (offset * -Vector3.back)
                                 + new Vector3(0, cameraAdditionalHeight + (offset - optimalOffset) * cameraPitchMultiplier);
-        transform.LookAt(POI.position);
+
+        // Custom Lookat
+        Vector3 direction = POI.position - transform.position;
+        Quaternion toRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, objectiveCatchUpSpeed * Time.time);
     }
 
     public void MoveCamera(float moveOffset) {
@@ -58,5 +63,21 @@ public class FollowingCamera : MonoBehaviour {
 
     public void ReplaceCamera() {
         offsetObjective = optimalOffset;
+    }
+
+    public void MoveCameraBetween(Transform target1, Transform target2, float moveOffset) {
+
+        POI.GetComponent<CameraTarget>().freeze = true;
+
+        Vector3 middlePoint = new Vector3(
+            (target1.position.x + target2.position.x) / 2,
+            (target1.position.y + target2.position.y) / 2,
+            (target1.position.z + target2.position.z) / 2
+        );
+        
+        if (!POI.position.Equals(middlePoint)) {
+            POI.position = Vector3.Lerp(POI.position, middlePoint, objectiveCatchUpSpeed * Time.deltaTime);
+        }
+        MoveCamera(moveOffset);
     }
 }

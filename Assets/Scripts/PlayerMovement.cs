@@ -10,7 +10,9 @@ public class PlayerMovement : MonoBehaviour {
     public float catchUpSpeed;
     public float cameraMovementMultiplier = 10f;
 
-    private Vector2 currentSpeed = new Vector2();
+    [HideInInspector]
+    public Vector2 currentSpeed = new Vector2();
+
     private FollowingCamera cameraScript;
     private GameController gameController;
 

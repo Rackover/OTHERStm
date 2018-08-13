@@ -7,6 +7,7 @@ public class CameraTarget : MonoBehaviour {
     public Transform characterBody; // Will follow this transform POSITION without inheriting the rotation
     public float catchUpSpeed = 8f;
     public float heightAboveHead = 2f;
+    public bool freeze = false;
 
 	// Use this for initialization
 	void Start () {
@@ -15,6 +16,10 @@ public class CameraTarget : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (freeze) {
+            freeze = false;
+            return;
+        }
 		if (!Vector3.Equals(characterBody.position, transform.position)) {
             transform.position = Vector3.Lerp(
                 new Vector3(

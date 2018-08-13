@@ -51,6 +51,8 @@ public class SequenceDisplay : MonoBehaviour {
         
         // Updating text
         string tag = "";
+        List<char> playerKnowledge = Camera.main.GetComponent<GameController>().discoveredSequence;
+
         for (int i = 0; i < behavior.mindSequence.Length; i++) {
             if (i > 0) {
                 tag += "\n";
@@ -60,10 +62,19 @@ public class SequenceDisplay : MonoBehaviour {
 
             if (behavior.mindSequenceMask[i]) {
                 letter = System.Convert.ToString(behavior.mindSequence[i]);
+
+                // Letter has been discovered to be part of target
+                if (playerKnowledge[i].Equals(behavior.mindSequence[i])) {
+                    string alphaHex = ((int)Mathf.Max(0, Mathf.Floor(alpha * Mathf.Min(drawClock, 1) * 255))).ToString("x2");
+                    string color = "#ffff00" + alphaHex;
+                    letter = "<color=\"" + color + "\">" + letter + "</color>";
+
+                }
             }
             else {
                 letter = "?";
             }
+
             tag += letter;
         }
         textComponent.text = tag;
