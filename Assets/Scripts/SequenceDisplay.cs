@@ -16,12 +16,24 @@ public class SequenceDisplay : MonoBehaviour {
     private BystanderBehavior behavior;
     private Transform player;
     private TextMesh textComponent;
+    private bool isPoliceman = false;
 
     // Use this for initialization
     void Start () {
         behavior = GetComponent<BystanderBehavior>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         textComponent = displayer.GetComponent<TextMesh>();
+
+        if (behavior.mode == BystanderBehavior.modes.Policeman) {
+            isPoliceman = true;
+            textComponent.anchor = TextAnchor.LowerCenter;
+            displayer.transform.localPosition = new Vector3(
+                displayer.transform.localPosition.x,
+                displayer.transform.localPosition.y + 2,
+                displayer.transform.localPosition.z
+            );
+            textComponent.text = "";
+        }
     }
 	
 	// Update is called once per frame
@@ -31,16 +43,20 @@ public class SequenceDisplay : MonoBehaviour {
             drawClock -= Time.deltaTime;
         }
 
+        if (isPoliceman) {
+            drawClock = 1f;
+        }
+
         // Updating alpha
         float alpha = 1;
         /*
         No longer needed :(
         alpha = Mathf.Clamp(minDrawDistance + maxDrawDistance - Vector3.Distance(transform.position, player.position), 0f, 1f);
-
-        */
         if (alpha < 0) {
             return;
         }
+
+        */
 
         textComponent.color = new Color(
             textComponent.color.r,
@@ -51,31 +67,44 @@ public class SequenceDisplay : MonoBehaviour {
         
         // Updating text
         string tag = "";
-        List<char> playerKnowledge = Camera.main.GetComponent<GameController>().discoveredSequence;
+        if (isPoliceman) {
+            switch (GetComponent<PolicemanBehavior>().attitude) {
+                case PolicemanBehavior.attitudes.Attacking:
+                    tag = "<color=\""+"#ffaaaaff"+"\">!</color>";
+                    break;
 
-        for (int i = 0; i < behavior.mindSequence.Length; i++) {
-            if (i > 0) {
-                tag += "\n";
+                case PolicemanBehavior.attitudes.Investigating:
+                    tag = "<color=\"" + "#33aaaaff" + "\">?</color>";
+                    break;
             }
+        }
+        else {
+            List<char> playerKnowledge = Camera.main.GetComponent<GameController>().discoveredSequence;
 
-            string letter;
-
-            if (behavior.mindSequenceMask[i]) {
-                letter = System.Convert.ToString(behavior.mindSequence[i]);
-
-                // Letter has been discovered to be part of target
-                if (playerKnowledge[i].Equals(behavior.mindSequence[i])) {
-                    string alphaHex = ((int)Mathf.Max(0, Mathf.Floor(alpha * Mathf.Min(drawClock, 1) * 255))).ToString("x2");
-                    string color = "#ffff00" + alphaHex;
-                    letter = "<color=\"" + color + "\">" + letter + "</color>";
-
+            for (int i = 0; i < behavior.mindSequence.Length; i++) {
+                if (i > 0) {
+                    tag += "\n";
                 }
-            }
-            else {
-                letter = "?";
-            }
 
-            tag += letter;
+                string letter;
+
+                if (behavior.mindSequenceMask[i]) {
+                    letter = System.Convert.ToString(behavior.mindSequence[i]);
+
+                    // Letter has been discovered to be part of target
+                    if (playerKnowledge[i].Equals(behavior.mindSequence[i])) {
+                        string alphaHex = ((int)Mathf.Max(0, Mathf.Floor(alpha * Mathf.Min(drawClock, 1) * 255))).ToString("x2");
+                        string color = "#ffff00" + alphaHex;
+                        letter = "<color=\"" + color + "\">" + letter + "</color>";
+
+                    }
+                }
+                else {
+                    letter = "?";
+                }
+
+                tag += letter;
+            }
         }
         textComponent.text = tag;
 

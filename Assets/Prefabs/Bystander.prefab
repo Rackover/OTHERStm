@@ -362,6 +362,9 @@ MonoBehaviour:
   personality: {fileID: 11400000, guid: 4d114ace344075041943b353184a0acf, type: 2}
   mode: 0
   targeted: 0
+  deathForce: 1000
+  policemanDebugRangePrefab: {fileID: 1388897755970354, guid: cdfd3713dc18bb94788392c9b8b498f4,
+    type: 2}
 --- !u!114 &114637176760003840
 MonoBehaviour:
   m_ObjectHideFlags: 1

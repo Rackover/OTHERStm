@@ -11,6 +11,7 @@ public class PlayerLink : MonoBehaviour {
     public Material linkMaterial;
     public float linkWidth = 0.1f;
     public float linkZoomBackDistance = 4f;
+    public float suspicionIncrement = 3f;
 
     private bool linking = false;
     private GameObject currentTarget;
@@ -72,7 +73,10 @@ public class PlayerLink : MonoBehaviour {
                 GameObject referenceTarget = null;
                 foreach (GameObject target in targets) {
                     float distance = Vector3.Distance(target.transform.position, transform.position);
-                    if ((referenceTarget == null || distance < nearest) && linkMaxDistance > distance) {
+                    if (target.GetComponent<BystanderBehavior>().mode != BystanderBehavior.modes.Policeman && 
+                        (referenceTarget == null || distance < nearest) && 
+                        linkMaxDistance > distance) {
+
                         referenceTarget = target;
                         nearest = distance;
                     }
@@ -103,15 +107,18 @@ public class PlayerLink : MonoBehaviour {
     }
 
     private IEnumerator LinkTarget (GameObject target) {
+        GameController controller = Camera.main.GetComponent<GameController>();
         target.GetComponent<BystanderBehavior>().UpdateKnowledge(Camera.main.GetComponent<GameController>().discoveredSequence);
         while (Input.GetButton("Link")) {
-            Camera.main.GetComponent<GameController>().timeStopped = true;
+            controller.timeStopped = true;
             Camera.main.GetComponent<FollowingCamera>().MoveCameraBetween(gameObject.transform, target.transform, linkZoomBackDistance);
             target.GetComponent<BystanderBehavior>().Unmask(Camera.main.GetComponent<GameController>().maxMindLength);
             target.GetComponent<SequenceDisplay>().drawClock = 2f; 
             yield return null;
         }
-        Camera.main.GetComponent<GameController>().timeStopped = false;
+        controller.timeStopped = false;
+        controller.IncreaseSuspicion(suspicionIncrement);
+        controller.Investigate(target.transform.position);
         target.GetComponent<BystanderBehavior>().Die();
         currentTarget = null;
         linking = false;

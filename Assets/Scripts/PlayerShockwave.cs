@@ -10,6 +10,7 @@ public class PlayerShockwave : MonoBehaviour {
     public float maxRange = 5f;
     public float speed = 1f;
     public float showTagsFor = 1f;
+    public float suspicionIncrement = 1f;
 
     private bool canShock = true;
 
@@ -30,6 +31,7 @@ public class PlayerShockwave : MonoBehaviour {
 
     private IEnumerator Shockwave() {
         canShock = false;
+        Camera.main.GetComponent<GameController>().IncreaseSuspicion(suspicionIncrement);
         GameObject instance = GameObject.Instantiate(shockwavePrefab);
         instance.transform.position = transform.position;
         instance.transform.parent = transform;

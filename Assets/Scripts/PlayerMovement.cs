@@ -15,10 +15,13 @@ public class PlayerMovement : MonoBehaviour {
 
     private FollowingCamera cameraScript;
     private GameController gameController;
+    private Rigidbody body;
+    private float rigidbodyForceMultiplier = 600f;
 
     private void Start() {
         cameraScript = Camera.main.GetComponent<FollowingCamera>();
         gameController = Camera.main.GetComponent<GameController>();
+        body = GetComponent<Rigidbody>();
     }
 
     private void Update() {
@@ -30,14 +33,14 @@ public class PlayerMovement : MonoBehaviour {
             maxspeed = runMaximumSpeed    
         }
         */
-
-        transform.Translate(currentSpeed.x, 0, currentSpeed.y);
-
+        
         Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
         if (gameController.paralyzed || gameController.timeStopped) {
             input = new Vector2();
         }
+
+        body.AddRelativeForce(new Vector3(input.x, 0, input.y)* maxSpeed * rigidbodyForceMultiplier*Time.deltaTime);
+        //transform.Translate(currentSpeed.x, 0, currentSpeed.y);
 
         // Looking in the right direction
         if (input.x != 0f || input.y != 0f) {
@@ -48,7 +51,8 @@ public class PlayerMovement : MonoBehaviour {
             );
         }
 
-        // Effective Movement
+
+        // Deprecated movement system, used for moving the camera away depending on the player speed
         if (currentSpeed.x < maxSpeed && currentSpeed.x > -maxSpeed) {
             currentSpeed.x = Mathf.Lerp(
                 currentSpeed.x,

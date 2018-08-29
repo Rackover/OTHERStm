@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class BystanderBehavior : MonoBehaviour {
     // color = new Color(Random.Range(100f, 200f), Random.Range(100f, 200f), Random.Range(100f, 200f))
 
-    public enum modes { DummyPFT, MouseClick, IdleForever, Wandering};
+    public enum modes { DummyPFT, MouseClick, IdleForever, Wandering, Policeman};
 
 
     public string mindSequence;
@@ -25,7 +25,12 @@ public class BystanderBehavior : MonoBehaviour {
     private float wanderMaxEvery = 6;
     private float wanderDistance = 3;
 
-        // Use this for initialization
+    // Policeman
+    public GameObject policemanDebugRangePrefab;
+    private GameObject policemanDebugRangeInstance;
+    private PolicemanBehavior policemanBehavior;
+
+    // Use this for initialization
     void Start () {
 
         gameController = Camera.main.GetComponent<GameController>();
@@ -35,22 +40,27 @@ public class BystanderBehavior : MonoBehaviour {
         agent.speed = Random.Range(personality.minSpeed, personality.maxSpeed);
 
         // Generate mind sequence
-        mindLength = (int) Mathf.Min(gameController.maxMindLength, mindLength);
-        mindSequence = gameController.RegisterBystander();
-
-        if (mindSequence.Length <= 0) {
-            Destroy(gameObject);
-            return;
+        if (mode == modes.Policeman) {
+            policemanDebugRangeInstance = Instantiate(policemanDebugRangePrefab, transform.position, transform.rotation, transform);
+            policemanBehavior = gameObject.AddComponent<PolicemanBehavior>();
         }
         else {
-            // By default, player doesn't know the mind sequence of said bystander
-            foreach(char _ in mindSequence) {
-                mindSequenceMask.Add(false);
-            }
-        }
+            mindLength = (int)Mathf.Min(gameController.maxMindLength, mindLength);
+            mindSequence = gameController.RegisterBystander();
 
-        if (mode == modes.Wandering) {
-            wanderClock = Random.value * wanderMaxEvery;
+            if (mindSequence.Length <= 0) {
+                Destroy(gameObject);
+                return;
+            }
+            else {
+                // By default, player doesn't know the mind sequence of said bystander
+                foreach (char _ in mindSequence) {
+                    mindSequenceMask.Add(false);
+                }
+            }
+            if (mode == modes.Wandering) {
+                wanderClock = Random.value * wanderMaxEvery;
+            }
         }
     }
 	
@@ -103,6 +113,27 @@ public class BystanderBehavior : MonoBehaviour {
                 }
                 if (agent.remainingDistance < 1) {
                     wanderClock += Time.deltaTime;
+                }
+                break;
+
+            case modes.Policeman:
+                // Update range circle showing up
+                policemanBehavior.UpdateVisualRadius(policemanDebugRangeInstance, gameController);
+                switch (policemanBehavior.attitude) {
+
+                    // Investigation - going to target
+                    case PolicemanBehavior.attitudes.Investigating:
+                        agent.SetDestination(policemanBehavior.investigationTarget);
+                        if (agent.remainingDistance < 1f) {
+                            policemanBehavior.attitude = PolicemanBehavior.attitudes.Idling;
+                            agent.isStopped = true;
+                        }
+                        break;
+                    
+                    // Attacking the player - Game over soon
+                    case PolicemanBehavior.attitudes.Attacking:
+
+                        break;
                 }
                 break;
         }
